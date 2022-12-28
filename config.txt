@@ -1,4 +1,4 @@
 NEXT = 100
 PREV = 100
-SET  = 10000
+SET  = 100
 GET  = 100

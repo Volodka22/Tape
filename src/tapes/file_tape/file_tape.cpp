@@ -47,7 +47,7 @@ namespace tapes {
         return cursor == 0;
     }
 
-    void file_tape::write_array_to_file(std::vector<int32_t>& array) const {
+    void file_tape::write_array_to_file(std::vector<int32_t> &array) const {
         std::fstream fs{file_name, std::fstream::out};
         for (size_t i = 0; i < array.size(); i++) {
             if (i == cursor) {
@@ -58,12 +58,13 @@ namespace tapes {
         fs.close();
     }
 
-    std::vector<int32_t> file_tape::read_file() const{
+    std::vector<int32_t> file_tape::read_file() const {
         std::vector<int32_t> array(size_);
         std::fstream fs{file_name, std::fstream::in};
         if (fs.is_open()) {
             for (size_t i = 0; i < array.size(); i++) {
-                while (!(std::isdigit(static_cast<unsigned char>(fs.peek())) || fs.peek() == '>' || fs.peek() == '-')) {
+                while (!(std::isdigit(static_cast<unsigned char>(fs.peek()))
+                         || fs.peek() == '>' || fs.peek() == '-' || fs.eof())) {
                     fs.get();
                 }
                 if (fs.peek() == '>') {
@@ -95,19 +96,15 @@ namespace tapes {
         std::fstream fs{config_file, std::fstream::in};
         if (fs.is_open()) {
             check("NEXT", fs);
-            check("=", fs);
             fs >> sleep_next;
 
             check("PREV", fs);
-            check("=", fs);
             fs >> sleep_prev;
 
             check("SET", fs);
-            check("=", fs);
             fs >> sleep_set;
 
             check("GET", fs);
-            check("=", fs);
             fs >> sleep_get;
 
         } else {
@@ -136,7 +133,6 @@ namespace tapes {
     std::string file_tape::get_path() const noexcept {
         return file_name;
     }
-
 
 
 }

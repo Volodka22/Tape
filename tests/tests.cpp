@@ -3,7 +3,7 @@
 #include "../src/tapes/file_tape/file_tape.h"
 #include "../src/tapes/file_tape/file_tape_manager.h"
 
-void test(std::string const& input, std::string const& output, size_t tape_length, size_t batch_size) {
+void test(std::string const &input, std::string const &output, size_t tape_length, size_t batch_size) {
 
     std::fstream input_stream{"input_test", std::fstream::out};
     input_stream << input;
@@ -30,33 +30,27 @@ void test(std::string const& input, std::string const& output, size_t tape_lengt
     ASSERT_EQ(my_out, output);
 }
 
-TEST(TapeTests, TestBatchEqLengh)
-{
+TEST(TapeTests, TestBatchEqLengh) {
     test(">7 1 5 4 6 11 3 9 2 8 ", ">1 2 3 4 5 6 7 8 9 11 ", 10, 10);
 }
 
-TEST(TapeTests, TestBatchGtLengh)
-{
+TEST(TapeTests, TestBatchGtLengh) {
     test(">7 1 1 -12 6 11 3 9 2 8 ", ">-12 1 1 2 3 6 7 8 9 11 ", 10, 20);
 }
 
-TEST(TapeTests, TestLengthDivideByBatch)
-{
+TEST(TapeTests, TestLengthDivideByBatch) {
     test(">7 1 5 -12 6 11 3 1 2 3 ", ">-12 1 1 2 3 3 5 6 7 11 ", 10, 2);
 }
 
-TEST(TapeTests, TestLengthNotDivideByBatch)
-{
+TEST(TapeTests, TestLengthNotDivideByBatch) {
     test(">7 1 5 -12 6 11 3 1 2 3 ", ">-12 1 1 2 3 3 5 6 7 11 ", 10, 3);
 }
 
-TEST(TapeTests, TestBatchIsOne)
-{
+TEST(TapeTests, TestBatchIsOne) {
     test(">7 1 5 -12 6 11 3 1 2 3 ", ">-12 1 1 2 3 3 5 6 7 11 ", 10, 1);
 }
 
-int main(int argc, char** argv)
-{
+int main(int argc, char **argv) {
     ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
 }

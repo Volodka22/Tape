@@ -45,8 +45,7 @@ namespace tapes {
     template<typename TAPE,
             typename MANAGER,
             typename = std::enable_if<std::is_base_of_v<tape, TAPE> && std::is_base_of_v<tape_manager, MANAGER>>>
-    void sort(TAPE const &input,
-              TAPE &output, MANAGER manager, size_t batch_size) {
+    void sort(TAPE const &input, TAPE &output, MANAGER manager, size_t batch_size) {
         assert(input.size() == output.size());
         input.to_first();
         std::vector<int32_t> array;

@@ -6,7 +6,7 @@
 namespace tapes {
 
     void file_tape_manager::add(std::vector<int32_t> const &array) {
-        std::string file_path = "./tmp/tape" +  std::to_string(tapes.size());
+        std::string file_path = tmp_path +  std::to_string(tapes.size());
         if(!config_path.empty()) {
             tapes.emplace_back(array.size(), file_path, config_path);
         } else {
@@ -35,7 +35,9 @@ namespace tapes {
         auto res = max_tape->current();
 
         if (max_tape->is_first()) {
+            auto name = max_tape->get_path();
             tapes.erase(max_tape);
+            std::remove(name.c_str());
         } else {
             max_tape->prev();
         }

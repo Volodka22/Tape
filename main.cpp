@@ -14,7 +14,7 @@ int main(int argc, char *argv[]) {
     tapes::file_tape input(tape_length, std::string(argv[1]), "config.txt");
     tapes::file_tape output(tape_length, std::string(argv[2]), "config.txt");
 
-    tapes::sort(input, output, tapes::file_tape_manager("./tmp/", "config.txt"), batch_size);
+    tapes::sort(input, output, tapes::file_tape_manager("./tmp/tape", "config.txt"), batch_size);
 
     return 0;
 }

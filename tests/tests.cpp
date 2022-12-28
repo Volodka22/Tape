@@ -50,6 +50,11 @@ TEST(TapeTests, TestBatchIsOne) {
     test(">7 1 5 -12 6 11 3 1 2 3 ", ">-12 1 1 2 3 3 5 6 7 11 ", 10, 1);
 }
 
+TEST(TapeTests, TestOneLngth) {
+    test(">-128 ", ">-128 ", 1, 2);
+}
+
+
 int main(int argc, char **argv) {
     ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();

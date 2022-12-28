@@ -14,6 +14,8 @@ namespace tapes {
 
         file_tape(std::size_t size_, std::string file_name_);
 
+        file_tape(std::size_t size_, std::string file_name_, const std::string& configure_file);
+
         void next() const override;
 
         void prev() const override;
@@ -26,9 +28,11 @@ namespace tapes {
 
         bool is_first() const noexcept override;
 
-        ~file_tape() override = default;
+        ~file_tape() override;
 
         void configure(const std::string& config_file);
+
+        std::string get_path() const noexcept;
 
     private:
         const std::string file_name;
@@ -38,11 +42,13 @@ namespace tapes {
         mutable int64_t sleep_next = 0;
         mutable int64_t sleep_prev = 0;
         mutable int64_t sleep_set = 0;
-        mutable int64_t sleep_current = 0;
+        mutable int64_t sleep_get = 0;
 
-        void write_array_to_file();
+        void write_array_to_file(bool is_finale = false) const;
 
         void read_file();
+
+        static void sleep(int64_t x) ;
 
         static void check(std::string const& next_token, std::fstream& fs);
 

@@ -2,14 +2,11 @@
 #include "tape.h"
 
 namespace tapes {
-
-    tape_error::tape_error(const char *msg) : message(msg) {}
-
     char const *tape_error::what() {
-        return message;
+        return message.c_str();
     }
 
-    tape_error::tape_error(const std::string &msg) : message(msg.c_str()) {}
+    tape_error::tape_error(std::string msg) : message(std::move(msg)) {}
 
     void tape::to_last() const noexcept {
         while (!is_last()) {

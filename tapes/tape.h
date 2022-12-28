@@ -10,14 +10,12 @@
 namespace tapes {
 
     struct tape_error : std::exception {
-        explicit tape_error(char const *msg);
-
-        explicit tape_error(const std::string& msg);
+        explicit tape_error(std::string msg);
 
         char const *what();
 
     private:
-        char const *message;
+        std::string message;
 
     };
 

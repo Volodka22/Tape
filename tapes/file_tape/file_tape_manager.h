@@ -9,6 +9,10 @@ namespace tapes {
 
     struct file_tape_manager : tape_manager {
 
+        explicit file_tape_manager(std::string tmp_path_);
+
+        file_tape_manager(std::string tmp_path_, std::string config_path_);
+
         void add(std::vector<int32_t> const &array) override;
 
         int32_t get_max() override;
@@ -17,8 +21,8 @@ namespace tapes {
 
     private:
         std::list<file_tape> tapes;
+        const std::string tmp_path;
+        const std::string config_path;
     };
 
 }
-
-const std::string TMP_PATH = "./tmp/tape";

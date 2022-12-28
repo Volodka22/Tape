@@ -11,10 +11,10 @@ int main(int argc, char *argv[]) {
     size_t tape_length = strtoull(argv[3], nullptr, 10);
     size_t batch_size = strtoull(argv[4], nullptr, 10);
 
-    tapes::file_tape input(tape_length, std::string(argv[1]));
-    tapes::file_tape output(tape_length, std::string(argv[2]));
+    tapes::file_tape input(tape_length, std::string(argv[1]), "config.txt");
+    tapes::file_tape output(tape_length, std::string(argv[2]), "config.txt");
 
-    tapes::sort(input, output, tapes::file_tape_manager(), batch_size);
+    tapes::sort(input, output, tapes::file_tape_manager("./tmp/", "config.txt"), batch_size);
 
     return 0;
 }

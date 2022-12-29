@@ -76,8 +76,6 @@ namespace tapes {
 
     /**
      *
-     * @tparam TAPE
-     * @tparam MANAGER
      * @param input - input tape
      * @param output - output tape
      * @param manager

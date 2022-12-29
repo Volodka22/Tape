@@ -8,35 +8,40 @@ namespace tapes {
 
     void file_tape::next() const {
         sleep(sleep_next);
-        auto array = read_file();
-        if (is_last()) {
-            throw tape_error("Cursor on last element");
-        }
-        ++cursor;
-        write_array_to_file(array);
+        cursor++;
+        read_int();
     }
 
     void file_tape::prev() const {
         sleep(sleep_prev);
-        auto array = read_file();
         if (is_first()) {
             throw tape_error("Cursor on first element");
         }
-        --cursor;
-        write_array_to_file(array);
+        cursor--;
+        fseek(file, -26, SEEK_CUR);
+        read_int();
     }
 
     void file_tape::set(int32_t x) {
         sleep(sleep_set);
-        auto array = read_file();
-        array[cursor] = x;
-        write_array_to_file(array);
+        fseek(file, -SPACE_SIZE - 1, SEEK_CUR);
+        write_int(x);
     }
 
     file_tape::file_tape(const std::size_t _size, std::string file_name_) :
             size_(_size), file_name(std::move(file_name_)) {
+        file = fopen(file_name.c_str(), "r+");
+        if (file == nullptr) {
+            file = fopen(file_name.c_str(), "w+");
+            for (size_t i = 0; i < size_; i++) {
+                write_int(0);
+            }
+            fseek(file, 0, SEEK_SET);
+        }
+
+        read_int();
+
         assert(size_ > 0);
-        read_file();
     }
 
     bool file_tape::is_last() const noexcept {
@@ -47,44 +52,9 @@ namespace tapes {
         return cursor == 0;
     }
 
-    void file_tape::write_array_to_file(std::vector<int32_t> &array) const {
-        std::fstream fs{file_name, std::fstream::out};
-        for (size_t i = 0; i < array.size(); i++) {
-            if (i == cursor) {
-                fs << ">";
-            }
-            fs << array[i] << ' ';
-        }
-        fs.close();
-    }
-
-    std::vector<int32_t> file_tape::read_file() const {
-        std::vector<int32_t> array(size_);
-        std::fstream fs{file_name, std::fstream::in};
-        if (fs.is_open()) {
-            for (size_t i = 0; i < array.size(); i++) {
-                while (!(std::isdigit(static_cast<unsigned char>(fs.peek()))
-                         || fs.peek() == '>' || fs.peek() == '-' || fs.eof())) {
-                    fs.get();
-                }
-                if (fs.peek() == '>') {
-                    fs.get();
-                    cursor = i;
-                }
-                fs >> array[i];
-
-            }
-            fs.close();
-        } else {
-            write_array_to_file(array);
-        }
-        return array;
-    }
-
     int32_t file_tape::current() const noexcept {
         sleep(sleep_get);
-        auto array = read_file();
-        return array[cursor];
+        return cur;
     }
 
 
@@ -93,19 +63,19 @@ namespace tapes {
     }
 
     void file_tape::configure(const std::string &config_file) {
-        std::fstream fs{config_file, std::fstream::in};
-        if (fs.is_open()) {
-            check("NEXT", fs);
-            fs >> sleep_next;
+        std::fstream config_stream{config_file, std::fstream::in};
+        if (config_stream.is_open()) {
+            check("NEXT", config_stream);
+            config_stream >> sleep_next;
 
-            check("PREV", fs);
-            fs >> sleep_prev;
+            check("PREV", config_stream);
+            config_stream >> sleep_prev;
 
-            check("SET", fs);
-            fs >> sleep_set;
+            check("SET", config_stream);
+            config_stream >> sleep_set;
 
-            check("GET", fs);
-            fs >> sleep_get;
+            check("GET", config_stream);
+            config_stream >> sleep_get;
 
         } else {
             throw tape_error("Configuration file didn't find");
@@ -113,9 +83,9 @@ namespace tapes {
 
     }
 
-    void file_tape::check(std::string const &next_token, std::fstream &fs) {
+    void file_tape::check(std::string const &next_token, std::fstream &config_stream) {
         std::string tmp;
-        fs >> tmp;
+        config_stream >> tmp;
         if (tmp != next_token) {
             throw tape_error("Incorrect configure file: expected " + next_token + " but found " + tmp);
         }
@@ -132,6 +102,44 @@ namespace tapes {
 
     std::string file_tape::get_path() const noexcept {
         return file_name;
+    }
+
+    void file_tape::read_int() const {
+        std::string s;
+        for (size_t i = 0; i < SPACE_SIZE; i++) {
+            int x = fgetc(file);
+            if (x != ' ' && x != '\t' && x != '\n' && x != '\r') {
+                s += (char)x;
+            }
+        }
+        char *p;
+        cur = static_cast<int32_t>(strtol(s.c_str(), &p, 10));
+        if (*p != 0) {
+            throw tape_error("Incorrect input (not a number): in cell " + std::to_string(cursor));
+        }
+        if (fgetc(file) != '|') {
+            throw tape_error("Incorrect input (lose \'|\' ): in cell " + std::to_string(cursor));
+        }
+    }
+
+    void file_tape::write_int(int32_t x) const {
+        std::string s = std::to_string(x);
+        size_t pos = 0;
+        for (auto a : s) {
+            fputc(a, file);
+            pos++;
+        }
+        while (pos < SPACE_SIZE) {
+            fputc(' ', file);
+            pos++;
+        }
+        fputc('|', file);
+        cur = x;
+        fflush(file);
+    }
+
+    file_tape::~file_tape() {
+        fclose(file);
     }
 
 

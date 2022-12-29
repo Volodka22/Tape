@@ -28,7 +28,7 @@ namespace tapes {
 
         bool is_first() const noexcept override;
 
-        ~file_tape() override = default;
+        ~file_tape() override;
 
         void configure(const std::string &config_file);
 
@@ -38,17 +38,21 @@ namespace tapes {
         const std::string file_name;
         size_t size_;
         mutable size_t cursor = 0;
+        mutable FILE* file;
+        mutable int32_t cur = 0;
+
 
         mutable int64_t sleep_next = 0;
         mutable int64_t sleep_prev = 0;
         mutable int64_t sleep_set = 0;
         mutable int64_t sleep_get = 0;
 
-        void write_array_to_file(std::vector<int32_t> &array) const;
-
-        std::vector<int32_t> read_file() const;
+        const int32_t SPACE_SIZE = 12;
 
         static void sleep(int64_t x);
+
+        void read_int() const;
+        void write_int(int32_t) const;
 
         static void check(std::string const &next_token, std::fstream &fs);
 

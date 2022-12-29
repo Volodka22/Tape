@@ -32,8 +32,6 @@ namespace tapes {
             }
         }
 
-        auto res = max_tape->current();
-
         if (max_tape->is_first()) {
             auto name = max_tape->get_path();
             tapes.erase(max_tape);
@@ -42,7 +40,7 @@ namespace tapes {
             max_tape->prev();
         }
 
-        return res;
+        return cur;
     }
 
     bool file_tape_manager::empty() const noexcept {
